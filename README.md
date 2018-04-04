@@ -10,3 +10,6 @@ At the very least this was built to provide a relatively easy way to version con
 1. Install `git`
 1. Install `git-lfs`
 1. `curl https://raw.githubusercontent.com/clintburgos/ableton-git/master/ableton-git -o /bin/ableton-git`
+
+## Usage
+You should `ableton-git init` from the root of your Ableton Live project. Otherwise use `ableton-git` as you would normally use `git`!
