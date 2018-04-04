@@ -18,7 +18,7 @@ git $@
 if [ $1 == "init" ] || [ $1 == "clone" ]
 then
 
-    #
+	#
 	# get the git directory
 	# for clone:
 	# 	from the url if no dir passed in
@@ -87,6 +87,7 @@ cat >> "$repo_dir/README.md" << EOL
 Created with \`ableton-git\`.
 
 Please use \`ableton-git\` to clone and use this project :)
+<https://github.com/clintburgos/ableton-git>
 EOL
 
 fi
