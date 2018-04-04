@@ -7,4 +7,6 @@ This is a wrapper for `git` that ensures the best settings for version controlli
 At the very least this was built to provide a relatively easy way to version control in a more reliable manner than Splice.
 
 ## Installation
-`sudo wget ... -P /bin`
+1. Install `git`
+1. Install `git-lfs`
+1. `curl https://raw.githubusercontent.com/clintburgos/ableton-git/master/ableton-git -o /bin/ableton-git`
