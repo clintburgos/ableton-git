@@ -29,15 +29,19 @@ then
 	then
 		if [ -z $3 ]
 		then
+			# clone with no location specified
 			proj_name_regex="\/\K.*(?=.git)"
 			proj_name=$(echo $2 | grep -oP $proj_name_regex)
 		else
+			# clone with location specified
 			proj_name=$3
 		fi
 
+		# set repo root to clone directory to append correct settings in a clone
 		repo_dir=$proj_name
 	else
 
+		# set repo root to current directory to append correct settings in an init
 		repo_dir=.
 	fi
 
