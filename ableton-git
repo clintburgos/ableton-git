@@ -31,7 +31,15 @@ then
 		then
 			# clone with no location specified
 			proj_name_regex="\/\K.*(?=.git)"
-			proj_name=$(echo $2 | grep -oP $proj_name_regex)
+
+			# macOS compatibility
+			if [ -x "$(command -v ggrep)" ]
+			then
+				proj_name=$(echo $2 | ggrep -oP $proj_name_regex)
+			else
+				proj_name=$(echo $2 | grep -oP $proj_name_regex)
+			fi
+
 		else
 			# clone with location specified
 			proj_name=$3
