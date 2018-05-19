@@ -11,8 +11,7 @@ At the very least this was built to provide a relatively easy way to version con
 ### Windows
 1. Install `git`
 1. Install `git-lfs`
-In Git Bash...
-1. `curl https://raw.githubusercontent.com/clintburgos/ableton-git/master/ableton-git -o /bin/ableton-git`
+1. In Git Bash... `curl https://raw.githubusercontent.com/clintburgos/ableton-git/master/ableton-git -o /bin/ableton-git`
 
 ### MacOS
 1. Install `git`
