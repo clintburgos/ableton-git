@@ -14,9 +14,8 @@ At the very least this was built to provide a relatively easy way to version con
 1. In Git Bash... `curl https://raw.githubusercontent.com/clintburgos/ableton-git/master/ableton-git -o /bin/ableton-git`
 
 ### MacOS
-1. Install `git`
-1. Install `git-lfs`
 1. Install `homebrew`
+1. `brew install git-lfs`
 1. `brew install ggrep`
 1. `curl https://raw.githubusercontent.com/clintburgos/ableton-git/master/ableton-git -o /usr/local/bin/ableton-git`
 
