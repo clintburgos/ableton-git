@@ -1,25 +1,32 @@
-extern crate fs_extra;
+#[macro_use]
+extern crate lazy_static;
 extern crate regex;
 
-use fs_extra::dir;
 use regex::Regex;
 use std::env;
-use std::fs;
+use std::fs::File;
 use std::fs::OpenOptions;
 use std::io::prelude::*;
 use std::process;
 use std::process::Command;
 use std::string::String;
 
+lazy_static! {
+    static ref GIT_CONFIG: String = String::from(include_str!("repo_files/config"));
+    static ref GIT_ATTRIBUTES: String = String::from(include_str!("repo_files/.gitattributes"));
+    static ref GIT_IGNORE: String = String::from(include_str!("repo_files/.gitignore"));
+    static ref GIT_README: String = String::from(include_str!("repo_files/README.md"));
+}
+
 fn main() {
     let args: Vec<String> = env::args().collect();
 
     // Pass args to git first.
     // For the most part, Ableton projects can be version controlled with unwrapped git.
-    Command::new("git")
-        .args(&args[1..])
-        .spawn()
-        .expect("Error occurred calling git. Is git installed?");
+//    Command::new("git")
+//        .args(&args[1..])
+//        .spawn()
+//        .expect("Error occurred calling git. Is git installed?");
 
     // We're only wrapping init and clone to ensure the repo is set up correctly.
     if !(&args[1] == "init" || &args[1] == "clone") {
@@ -65,7 +72,20 @@ fn derive_project_name_from_repository_path(repository_path: &String) -> String 
 }
 
 fn copy_repo_files(repo_directory: &String) {
-    dir::copy("repo_files", repo_directory, &dir::CopyOptions::new());
+    let mut git_attributes_file = File::create(format!("{}/.gitattributes", repo_directory))
+        .expect("Could not create .gitattributes");
+    git_attributes_file.write_all(GIT_ATTRIBUTES.as_bytes())
+        .expect("Could not write to .gitattributes");
+
+    let mut git_ignore_file = File::open(format!("{}/.gitignore", repo_directory))
+        .expect("Could not create .gitignore");
+    git_ignore_file.write_all(GIT_IGNORE.as_bytes())
+        .expect("Could not write to .gitignore");
+
+    let mut git_readme_file = File::open(format!("{}/README.md", repo_directory))
+        .expect("Could not create README.md");
+    git_readme_file.write_all(GIT_README.as_bytes())
+        .expect("Could not write to README.md");
 }
 
 fn append_config(repo_directory: &String) {
@@ -74,8 +94,6 @@ fn append_config(repo_directory: &String) {
         .open(format!("{}/.git/config", repo_directory))
         .expect("Could not open .git/config for appending");
 
-    let config_to_append =
-        fs::read_to_string("src/templates/config.txt").expect("Could not read config template");
-
-    repository_config_file.write_all(config_to_append.as_bytes());
+    repository_config_file.write_all(GIT_CONFIG.as_bytes())
+        .expect("Could not write to .git/config");
 }
