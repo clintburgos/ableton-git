@@ -1,0 +1,5 @@
+[filter "zcat"]
+	clean = zcat -f
+	smudge = zcat -f
+[diff "zcat"]
+	textconv = zcat
