@@ -23,10 +23,10 @@ fn main() {
 
     // Pass args to git first.
     // For the most part, Ableton projects can be version controlled with unwrapped git.
-//    Command::new("git")
-//        .args(&args[1..])
-//        .spawn()
-//        .expect("Error occurred calling git. Is git installed?");
+    Command::new("git")
+        .args(&args[1..])
+        .spawn()
+        .expect("Error occurred calling git. Is git installed?");
 
     // We're only wrapping init and clone to ensure the repo is set up correctly.
     if !(&args[1] == "init" || &args[1] == "clone") {
