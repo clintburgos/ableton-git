@@ -31,7 +31,7 @@ fn main() {
     // We're only wrapping init and clone to ensure the repo is set up correctly.
     let command = match args.get(1) {
         Some(command) => command,
-        None => return
+        None => return,
     };
 
     if !(command == "init" || command == "clone") {
@@ -47,13 +47,19 @@ fn main() {
     append_config(&repo_directory);
 }
 
-fn get_repo_directory(command: &String, repository_resource_path: Option<&String>, project_name: Option<&String>) -> String {
+fn get_repo_directory(
+    command: &String,
+    repository_resource_path: Option<&String>,
+    project_name: Option<&String>,
+) -> String {
     if command == "init" {
         return String::from(".");
     }
 
     match project_name {
-        None => derive_project_name_from_repository_resource_path(repository_resource_path.unwrap()),
+        None => {
+            derive_project_name_from_repository_resource_path(repository_resource_path.unwrap())
+        }
         Some(repository_path) => repository_path.clone(),
     }
 }
@@ -79,17 +85,20 @@ fn derive_project_name_from_repository_resource_path(repository_path: &String) -
 fn copy_repo_files(repo_directory: &String) {
     let mut git_attributes_file = File::create(format!("{}/.gitattributes", repo_directory))
         .expect("Could not create .gitattributes");
-    git_attributes_file.write_all(GIT_ATTRIBUTES.as_bytes())
+    git_attributes_file
+        .write_all(GIT_ATTRIBUTES.as_bytes())
         .expect("Could not write to .gitattributes");
 
-    let mut git_ignore_file = File::open(format!("{}/.gitignore", repo_directory))
-        .expect("Could not create .gitignore");
-    git_ignore_file.write_all(GIT_IGNORE.as_bytes())
+    let mut git_ignore_file =
+        File::open(format!("{}/.gitignore", repo_directory)).expect("Could not create .gitignore");
+    git_ignore_file
+        .write_all(GIT_IGNORE.as_bytes())
         .expect("Could not write to .gitignore");
 
-    let mut git_readme_file = File::open(format!("{}/README.md", repo_directory))
-        .expect("Could not create README.md");
-    git_readme_file.write_all(GIT_README.as_bytes())
+    let mut git_readme_file =
+        File::open(format!("{}/README.md", repo_directory)).expect("Could not create README.md");
+    git_readme_file
+        .write_all(GIT_README.as_bytes())
         .expect("Could not write to README.md");
 }
 
@@ -99,7 +108,8 @@ fn append_config(repo_directory: &String) {
         .open(format!("{}/.git/config", repo_directory))
         .expect("Could not open .git/config for appending");
 
-    repository_config_file.write_all(GIT_CONFIG.as_bytes())
+    repository_config_file
+        .write_all(GIT_CONFIG.as_bytes())
         .expect("Could not write to .git/config");
 }
 
