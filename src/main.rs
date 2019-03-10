@@ -29,31 +29,36 @@ fn main() {
         .expect("Error occurred calling git. Is git installed?");
 
     // We're only wrapping init and clone to ensure the repo is set up correctly.
-    if !(&args[1] == "init" || &args[1] == "clone") {
+    let command = match args.get(1) {
+        Some(command) => command,
+        None => return
+    };
+
+    if !(command == "init" || command == "clone") {
         return;
     }
 
-    let repo_directory = get_repo_directory(&args);
+    let repo_directory = get_repo_directory(command, args.get(2), args.get(3));
 
-    if &args[1] == "init" {
+    if command == "init" {
         copy_repo_files(&repo_directory);
     }
 
     append_config(&repo_directory);
 }
 
-fn get_repo_directory(args: &Vec<String>) -> String {
-    if &args[1] == "init" {
+fn get_repo_directory(command: &String, repository_resource_path: Option<&String>, project_name: Option<&String>) -> String {
+    if command == "init" {
         return String::from(".");
     }
 
-    match args.get(3) {
-        None => derive_project_name_from_repository_path(&args[2]),
-        _ => args[3].clone(),
+    match project_name {
+        None => derive_project_name_from_repository_resource_path(repository_resource_path.unwrap()),
+        Some(repository_path) => repository_path.clone(),
     }
 }
 
-fn derive_project_name_from_repository_path(repository_path: &String) -> String {
+fn derive_project_name_from_repository_resource_path(repository_path: &String) -> String {
     let project_name_regex = Regex::new("(?:.*/)(?P<project_name>.*)(?:.git)")
         .expect("Could not construct project name regex");
 
