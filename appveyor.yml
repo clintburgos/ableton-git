@@ -15,12 +15,6 @@ environment:
     - TARGET: i686-pc-windows-msvc
     - TARGET: x86_64-pc-windows-msvc
 
-    # Testing other channels
-    - TARGET: x86_64-pc-windows-gnu
-      RUST_VERSION: nightly
-    - TARGET: x86_64-pc-windows-msvc
-      RUST_VERSION: nightly
-
 install:
   - ps: >-
       If ($Env:TARGET -eq 'x86_64-pc-windows-gnu') {
@@ -68,10 +62,6 @@ branches:
     # Release tags
     - /^v\d+\.\d+\.\d+.*$/
     - master
-
-notifications:
-  - provider: Email
-    on_build_success: false
 
 # Building is done in the test phase, so we disable Appveyor's build phase.
 build: false
