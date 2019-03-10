@@ -102,3 +102,17 @@ fn append_config(repo_directory: &String) {
     repository_config_file.write_all(GIT_CONFIG.as_bytes())
         .expect("Could not write to .git/config");
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::get_repo_directory;
+
+    #[test]
+    fn get_repo_directory_for_init_is_pwd() {
+        let command = String::from("init");
+        let repository_resource_path = Option::None;
+        let project_name = Option::None;
+        let repo_directory = get_repo_directory(&command, repository_resource_path, project_name);
+        assert_eq!(repo_directory, String::from("."));
+    }
+}
