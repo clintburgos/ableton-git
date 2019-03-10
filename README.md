@@ -1,4 +1,4 @@
-# Ableton-Git
+# Ableton-Git [![Build Status](https://travis-ci.org/clintburgos/ableton-git.svg?branch=master)](https://travis-ci.org/clintburgos/ableton-git) ![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/clintburgos/ableton-git?branch=master&svg=true)
 
 This is a wrapper for `git` that ensures the best settings for version controlling Ableton Live projects.
 * Audio files are managed by `git-lfs`
