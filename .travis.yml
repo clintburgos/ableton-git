@@ -37,7 +37,7 @@ before_deploy:
 deploy:
   api_key:
     secure: "MCznNDg0y7ojQ+zntea3DvsQj9XLIR9UEpqE1KvibbEsXRuPEvRg5JKvXo1OuQskGhSkQDo8X11dhK1uuJl2kq2NazLeVBE/EMgNyIgFTCAyxG+CDge8lrNGwpfLcRwjo3+BcERU/FaKNcjR2lx41b/88HgnuZyne11TYhniQPsX7/dngOVJpH9oO9rtXwGo2G3wp3u2rcnksteMnxpXayEgAKexH1PzL/t7K9ouKR2HSvVSzWzjPe2PQGkiXPp9LgzYFS8k5x/JAjqbZE2Ye2XLNxGLJUcZzw1+dgQITN/39mZ7hBueTuU5FMHVPGvI/sWwOphcvGH6K696e6Kvt2oOtWtPjkUuiu5lUS8nd2djDd5xMZgNXwQo8uHuvq3LdBsjyG1W0TnDWJ1oGNgEqwOwfcWdJF1ymrWU+Q3ZsDYtPJNLPcBXcngoB1LxeHfdhf1xe+pBMTnZpMTRm9wv5XCc7jmnyfitmWr33oa807XkVU6F3iZsnoA3Z7PBl4jSu/AkBkZI025pCORrkNmonmVKs7aotBIGaRgHLvuSMgRNO3ltsaXfEJVNLcZQ0a6u9njrBjS8RF8YdUlPrbyMvmriLEMeZ0wvpDAjIWHYr28I5VwiRHOZo6tvT1ijcy5xJQul6fd6ldl4H5xGvLZjhaS3pIFt/2aUup+aR+s5ed0="
-    file_glob: true
+  file_glob: true
   file: $CRATE_NAME-$TRAVIS_TAG-$TARGET.*
   on:
     condition: $TRAVIS_RUST_VERSION = stable
