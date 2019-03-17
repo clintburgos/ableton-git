@@ -87,7 +87,11 @@ fn get_repo_directory_for_init(git_stdout: Vec<u8>) -> String {
     let git_stdout = String::from_utf8(git_stdout)
         .expect("Failed to convert stdout output from git into a string.");
 
-    String::from(".")
+    let repo_directory_regex =
+        Regex::new("(Initialized empty |Reinitialized existing )(Git repository in )(?P<repo_directory>.*)(/.git/\n)")
+            .expect("Could not construct repo directory regex");
+
+    capture_repo_directory_with_regex(&git_stdout, repo_directory_regex)
 }
 
 fn get_repo_directory_for_clone(git_stderr: Vec<u8>) -> String {
@@ -98,11 +102,15 @@ fn get_repo_directory_for_clone(git_stderr: Vec<u8>) -> String {
         Regex::new("(Cloning into \')(?P<repo_directory>.*)(\'...\n)")
             .expect("Could not construct repo directory regex");
 
-    match repo_directory_regex.captures(&git_stderr) {
+    capture_repo_directory_with_regex(&git_stderr, repo_directory_regex)
+}
+
+fn capture_repo_directory_with_regex(string: &str, repo_directory_regex: Regex) -> String {
+    match repo_directory_regex.captures(string) {
         Some(captures) => String::from(
             captures
                 .name("repo_directory")
-                .expect("Could not capture repo directory from stderr output.")
+                .expect("Could not capture repo directory from git output.")
                 .as_str(),
         ),
         None => {
@@ -118,17 +126,23 @@ mod tests {
     use crate::get_repo_directory_for_clone;
 
     #[test]
-    fn get_repo_directory_for_init_is_pwd() {
-        let git_stdout = Vec::new();
+    fn test_get_repo_directory_for_init() {
+        let git_stdout = Vec::from("Initialized empty Git repository in /Users/clintonburgos/Documents/Projects/2019/test Project/.git/\n");
         let repo_directory = get_repo_directory_for_init(git_stdout);
-        assert_eq!(repo_directory, String::from("."));
+        assert_eq!(repo_directory, String::from("/Users/clintonburgos/Documents/Projects/2019/test Project"));
     }
 
-//    #[test]
-//    fn get_repo_directory_for_clone_is_() {
-//        let command = String::from("init");
-//        let git_stderr = String::from("");
-//        let repo_directory = get_repo_directory(&command, &git_stderr);
-//        assert_eq!(repo_directory, String::from("."));
-//    }
+    #[test]
+    fn test_get_repo_directory_for_reinit() {
+        let git_stdout = Vec::from("Reinitialized existing Git repository in /Users/clintonburgos/Documents/Projects/2019/test Project/.git/\n");
+        let repo_directory = get_repo_directory_for_init(git_stdout);
+        assert_eq!(repo_directory, String::from("/Users/clintonburgos/Documents/Projects/2019/test Project"));
+    }
+
+    #[test]
+    fn test_get_repo_directory_for_clone() {
+        let git_stderr = Vec::from("Cloning into \'testdir/test\'...\n");
+        let repo_directory = get_repo_directory_for_clone(git_stderr);
+        assert_eq!(repo_directory, String::from("testdir/test"));
+    }
 }
