@@ -27,3 +27,5 @@ $ ableton-git clone ...
 
 # Use `ableton-git` as you would normally use `git`!
 ```
+
+I recommend hosting Ableton projects on [GitLab](https://gitlab.com/) because you get 10 GB per repo for free 🙂
