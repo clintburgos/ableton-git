@@ -12,10 +12,10 @@ use std::process::Command;
 use std::string::String;
 
 lazy_static! {
-    static ref GIT_CONFIG: String = String::from(include_str!("repo_files/config"));
-    static ref GIT_ATTRIBUTES: String = String::from(include_str!("repo_files/.gitattributes"));
-    static ref GIT_IGNORE: String = String::from(include_str!("repo_files/.gitignore"));
-    static ref GIT_README: String = String::from(include_str!("repo_files/README.md"));
+    static ref GIT_CONFIG: String = String::from(include_str!("text/config"));
+    static ref GIT_ATTRIBUTES: String = String::from(include_str!("text/.gitattributes"));
+    static ref GIT_IGNORE: String = String::from(include_str!("text/.gitignore"));
+    static ref GIT_README: String = String::from(include_str!("text/README.md"));
 }
 
 fn main() {
@@ -23,10 +23,15 @@ fn main() {
 
     // Pass args to git first.
     // For the most part, Ableton projects can be version controlled with unwrapped git.
-    Command::new("git")
+    let output = Command::new("git")
         .args(&args[1..])
-        .spawn()
+        .output()
         .expect("Error occurred calling git. Is git installed?");
+
+    // Do not proceed if git had a failure.
+    if !output.status.success() {
+        return;
+    }
 
     // We're only wrapping init and clone to ensure the repo is set up correctly.
     let command = match args.get(1) {
@@ -38,13 +43,40 @@ fn main() {
         return;
     }
 
-    let repo_directory = get_repo_directory(command, args.get(2), args.get(3));
+    let repo_directory =
+        get_repo_directory(command, args.get(2), args.get(3));
 
     if command == "init" {
-        copy_repo_files(&repo_directory);
+        let mut git_attributes_file =
+            File::create(format!("{}/.gitattributes", repo_directory))
+                .expect("Could not create .gitattributes");
+        git_attributes_file
+            .write_all(GIT_ATTRIBUTES.as_bytes())
+            .expect("Could not write to .gitattributes");
+
+        let mut git_ignore_file =
+            File::create(format!("{}/.gitignore", repo_directory))
+                .expect("Could not create .gitignore");
+        git_ignore_file
+            .write_all(GIT_IGNORE.as_bytes())
+            .expect("Could not write to .gitignore");
+
+        let mut git_readme_file =
+            File::create(format!("{}/README.md", repo_directory))
+                .expect("Could not create README.md");
+        git_readme_file
+            .write_all(GIT_README.as_bytes())
+            .expect("Could not write to README.md");
     }
 
-    append_config(&repo_directory);
+    let mut repository_config_file = OpenOptions::new()
+        .append(true)
+        .open(format!("{}/.git/config", repo_directory))
+        .expect("Could not open .git/config for appending");
+
+    repository_config_file
+        .write_all(GIT_CONFIG.as_bytes())
+        .expect("Could not write to .git/config");
 }
 
 fn get_repo_directory(
@@ -80,37 +112,6 @@ fn derive_project_name_from_repository_resource_path(repository_path: &String) -
             process::exit(1);
         }
     };
-}
-
-fn copy_repo_files(repo_directory: &String) {
-    let mut git_attributes_file = File::create(format!("{}/.gitattributes", repo_directory))
-        .expect("Could not create .gitattributes");
-    git_attributes_file
-        .write_all(GIT_ATTRIBUTES.as_bytes())
-        .expect("Could not write to .gitattributes");
-
-    let mut git_ignore_file =
-        File::open(format!("{}/.gitignore", repo_directory)).expect("Could not create .gitignore");
-    git_ignore_file
-        .write_all(GIT_IGNORE.as_bytes())
-        .expect("Could not write to .gitignore");
-
-    let mut git_readme_file =
-        File::open(format!("{}/README.md", repo_directory)).expect("Could not create README.md");
-    git_readme_file
-        .write_all(GIT_README.as_bytes())
-        .expect("Could not write to README.md");
-}
-
-fn append_config(repo_directory: &String) {
-    let mut repository_config_file = OpenOptions::new()
-        .append(true)
-        .open(format!("{}/.git/config", repo_directory))
-        .expect("Could not open .git/config for appending");
-
-    repository_config_file
-        .write_all(GIT_CONFIG.as_bytes())
-        .expect("Could not write to .git/config");
 }
 
 #[cfg(test)]
