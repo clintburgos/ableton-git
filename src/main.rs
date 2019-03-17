@@ -23,13 +23,13 @@ fn main() {
 
     // Pass args to git first.
     // For the most part, Ableton projects can be version controlled with unwrapped git.
-    let output = Command::new("git")
+    let git_output = Command::new("git")
         .args(&args[1..])
         .output()
         .expect("Error occurred calling git. Is git installed?");
 
     // Do not proceed if git had a failure.
-    if !output.status.success() {
+    if !git_output.status.success() {
         return;
     }
 
@@ -44,7 +44,11 @@ fn main() {
     }
 
     let repo_directory =
-        get_repo_directory(command, args.get(2), args.get(3));
+        if command == "init" {
+            get_repo_directory_for_init(git_output.stdout)
+        } else {
+            get_repo_directory_for_clone(git_output.stderr)
+        };
 
     if command == "init" {
         let mut git_attributes_file =
@@ -79,51 +83,52 @@ fn main() {
         .expect("Could not write to .git/config");
 }
 
-fn get_repo_directory(
-    command: &String,
-    repository_resource_path: Option<&String>,
-    project_name: Option<&String>,
-) -> String {
-    if command == "init" {
-        return String::from(".");
-    }
+fn get_repo_directory_for_init(git_stdout: Vec<u8>) -> String {
+    let git_stdout = String::from_utf8(git_stdout)
+        .expect("Failed to convert stdout output from git into a string.");
 
-    match project_name {
-        None => {
-            derive_project_name_from_repository_resource_path(repository_resource_path.unwrap())
-        }
-        Some(repository_path) => repository_path.clone(),
-    }
+    String::from(".")
 }
 
-fn derive_project_name_from_repository_resource_path(repository_path: &String) -> String {
-    let project_name_regex = Regex::new("(?:.*/)(?P<project_name>.*)(?:.git)")
-        .expect("Could not construct project name regex");
+fn get_repo_directory_for_clone(git_stderr: Vec<u8>) -> String {
+    let git_stderr = String::from_utf8(git_stderr)
+        .expect("Failed to convert stderr output from git into a string.");
 
-    return match project_name_regex.captures(repository_path) {
+    let repo_directory_regex =
+        Regex::new("(Cloning into \')(?P<repo_directory>.*)(\'...\n)")
+            .expect("Could not construct repo directory regex");
+
+    match repo_directory_regex.captures(&git_stderr) {
         Some(captures) => String::from(
             captures
-                .name("project_name")
-                .expect("Could not capture project name in repository path")
+                .name("repo_directory")
+                .expect("Could not capture repo directory from stderr output.")
                 .as_str(),
         ),
         None => {
-            println!("Invalid repository path.");
+            println!("Ableton-git received unexpected output from git.");
             process::exit(1);
         }
-    };
+    }
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::get_repo_directory;
+    use crate::get_repo_directory_for_init;
+    use crate::get_repo_directory_for_clone;
 
     #[test]
     fn get_repo_directory_for_init_is_pwd() {
-        let command = String::from("init");
-        let repository_resource_path = Option::None;
-        let project_name = Option::None;
-        let repo_directory = get_repo_directory(&command, repository_resource_path, project_name);
+        let git_stdout = Vec::new();
+        let repo_directory = get_repo_directory_for_init(git_stdout);
         assert_eq!(repo_directory, String::from("."));
     }
+
+//    #[test]
+//    fn get_repo_directory_for_clone_is_() {
+//        let command = String::from("init");
+//        let git_stderr = String::from("");
+//        let repo_directory = get_repo_directory(&command, &git_stderr);
+//        assert_eq!(repo_directory, String::from("."));
+//    }
 }
