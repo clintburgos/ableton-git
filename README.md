@@ -1,8 +1,8 @@
 # Ableton-Git [![Build Status](https://travis-ci.org/clintburgos/ableton-git.svg?branch=master)](https://travis-ci.org/clintburgos/ableton-git) ![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/clintburgos/ableton-git?branch=master&svg=true)
 
-This is a wrapper for `git` that ensures the best settings for version controlling Ableton Live projects.
+This is a wrapper for `git` that ensures the best settings when working with Ableton Live projects.
 * Audio files are managed by `git-lfs`
-* `.als` files are unzipped for git operations to enable diffs, merges, and all that good stuff-- at least, depending on how much you're willing to experiment with the project files ;)
+* `.als` files are unzipped to XML, so some conflicts can be resolved by looking at the `diff`.
 
 The motivation for this project is to leverage the power and reliability of `git` for online music collaboration.
 
