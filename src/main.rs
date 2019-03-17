@@ -43,31 +43,27 @@ fn main() {
         return;
     }
 
-    let repo_directory =
-        if command == "init" {
-            get_repo_directory_for_init(git_output.stdout)
-        } else {
-            get_repo_directory_for_clone(git_output.stderr)
-        };
+    let repo_directory = if command == "init" {
+        get_repo_directory_for_init(git_output.stdout)
+    } else {
+        get_repo_directory_for_clone(git_output.stderr)
+    };
 
     if command == "init" {
-        let mut git_attributes_file =
-            File::create(format!("{}/.gitattributes", repo_directory))
-                .expect("Could not create .gitattributes");
+        let mut git_attributes_file = File::create(format!("{}/.gitattributes", repo_directory))
+            .expect("Could not create .gitattributes");
         git_attributes_file
             .write_all(GIT_ATTRIBUTES.as_bytes())
             .expect("Could not write to .gitattributes");
 
-        let mut git_ignore_file =
-            File::create(format!("{}/.gitignore", repo_directory))
-                .expect("Could not create .gitignore");
+        let mut git_ignore_file = File::create(format!("{}/.gitignore", repo_directory))
+            .expect("Could not create .gitignore");
         git_ignore_file
             .write_all(GIT_IGNORE.as_bytes())
             .expect("Could not write to .gitignore");
 
-        let mut git_readme_file =
-            File::create(format!("{}/README.md", repo_directory))
-                .expect("Could not create README.md");
+        let mut git_readme_file = File::create(format!("{}/README.md", repo_directory))
+            .expect("Could not create README.md");
         git_readme_file
             .write_all(GIT_README.as_bytes())
             .expect("Could not write to README.md");
@@ -98,9 +94,8 @@ fn get_repo_directory_for_clone(git_stderr: Vec<u8>) -> String {
     let git_stderr = String::from_utf8(git_stderr)
         .expect("Failed to convert stderr output from git into a string.");
 
-    let repo_directory_regex =
-        Regex::new("(Cloning into \')(?P<repo_directory>.*)(\'...\n)")
-            .expect("Could not construct repo directory regex");
+    let repo_directory_regex = Regex::new("(Cloning into \')(?P<repo_directory>.*)(\'...\n)")
+        .expect("Could not construct repo directory regex");
 
     capture_repo_directory_with_regex(&git_stderr, repo_directory_regex)
 }
@@ -122,21 +117,27 @@ fn capture_repo_directory_with_regex(string: &str, repo_directory_regex: Regex) 
 
 #[cfg(test)]
 mod tests {
-    use crate::get_repo_directory_for_init;
     use crate::get_repo_directory_for_clone;
+    use crate::get_repo_directory_for_init;
 
     #[test]
     fn test_get_repo_directory_for_init() {
         let git_stdout = Vec::from("Initialized empty Git repository in /Users/clintonburgos/Documents/Projects/2019/test Project/.git/\n");
         let repo_directory = get_repo_directory_for_init(git_stdout);
-        assert_eq!(repo_directory, String::from("/Users/clintonburgos/Documents/Projects/2019/test Project"));
+        assert_eq!(
+            repo_directory,
+            String::from("/Users/clintonburgos/Documents/Projects/2019/test Project")
+        );
     }
 
     #[test]
     fn test_get_repo_directory_for_reinit() {
         let git_stdout = Vec::from("Reinitialized existing Git repository in /Users/clintonburgos/Documents/Projects/2019/test Project/.git/\n");
         let repo_directory = get_repo_directory_for_init(git_stdout);
-        assert_eq!(repo_directory, String::from("/Users/clintonburgos/Documents/Projects/2019/test Project"));
+        assert_eq!(
+            repo_directory,
+            String::from("/Users/clintonburgos/Documents/Projects/2019/test Project")
+        );
     }
 
     #[test]
