@@ -1,23 +1,29 @@
-# Ableton-Git
+# Ableton-Git [![Build Status](https://travis-ci.org/clintburgos/ableton-git.svg?branch=master)](https://travis-ci.org/clintburgos/ableton-git) ![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/clintburgos/ableton-git?branch=master&svg=true)
 
-This is a wrapper for `git` that ensures the best settings for version controlling Ableton Live projects.
+This is a wrapper for `git` that ensures the best settings when working with Ableton Live projects.
 * Audio files are managed by `git-lfs`
-* `.als` files are unzipped for git operations to enable diffs, merges, and all that good stuff-- at least, depending on how much you're willing to experiment with the project files ;)
+* `.als` files are unzipped to XML, so some conflicts can be resolved by looking at the `diff`.
 
-At the very least this was built to provide a relatively easy way to version control in a more reliable manner than Splice.
+The motivation for this project is to leverage the power and reliability of `git` for online music collaboration.
 
 ## Installation
 
-### Windows
-1. Install `git`
-1. Install `git-lfs`
-1. In Git Bash... `curl https://raw.githubusercontent.com/clintburgos/ableton-git/master/ableton-git -o /bin/ableton-git`
+### Prerequisites
+You must have `git` and `git-lfs` installed.
 
-### MacOS
-1. Install `homebrew`
-1. `brew install git-lfs`
-1. `brew install ggrep`
-1. `curl https://raw.githubusercontent.com/clintburgos/ableton-git/master/ableton-git -o /usr/local/bin/ableton-git`
+### Binary
+Download from the [releases page](https://github.com/clintburgos/ableton-git/releases). Place it in your `bin` directory.
+
+### Source
+Clone this repo and run `cargo build --release`. The compiled binary will appear in `target/release`.
 
 ## Usage
-You should `ableton-git init` from the root of your Ableton Live project. Otherwise use `ableton-git` as you would normally use `git`!
+```
+# From the root of your Ableton Live project:
+$ ableton-git init
+
+# Or to check out someone else's work:
+$ ableton-git clone ...
+
+# Use `ableton-git` as you would normally use `git`!
+```
