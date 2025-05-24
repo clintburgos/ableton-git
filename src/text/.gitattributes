@@ -5,7 +5,7 @@ Samples/** filter=lfs diff=lfs merge=lfs -text
 *.als filter=zcat
 
 # ensure LF line endings on pesky windows machines
-* text eol=lf
+* text=auto eol=lf
 
 # don't attempt to fix line endings on audio files
 *.als binary
