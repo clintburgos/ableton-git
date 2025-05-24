@@ -6,3 +6,11 @@ Samples/** filter=lfs diff=lfs merge=lfs -text
 
 # ensure LF line endings on pesky windows machines
 * text=auto eol=lf
+
+# don't attempt to fix line endings on audio files
+*.als binary
+*.wav binary
+*.aif binary
+*.mp3 binary
+*.ogg binary
+*.flac binary

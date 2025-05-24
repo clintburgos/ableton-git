@@ -3,13 +3,13 @@ extern crate lazy_static;
 extern crate regex;
 
 use regex::Regex;
-use std::env;
 use std::fs::File;
 use std::fs::OpenOptions;
 use std::io::prelude::*;
 use std::process;
 use std::process::Command;
 use std::string::String;
+use std::{env, io};
 
 lazy_static! {
     static ref GIT_CONFIG: String = String::from(include_str!("text/config"));
@@ -27,6 +27,10 @@ fn main() {
         .args(&args[1..])
         .output()
         .expect("Error occurred calling git. Is git installed?");
+
+    // print the output from git
+    io::stdout().write_all(&git_output.stdout).unwrap();
+    io::stderr().write_all(&git_output.stderr).unwrap();
 
     // Do not proceed if git had a failure.
     if !git_output.status.success() {
@@ -50,33 +54,25 @@ fn main() {
     };
 
     if command == "init" {
-        let mut git_attributes_file = File::create(format!("{}/.gitattributes", repo_directory))
-            .expect("Could not create .gitattributes");
-        git_attributes_file
-            .write_all(GIT_ATTRIBUTES.as_bytes())
-            .expect("Could not write to .gitattributes");
+        File::create(format!("{}/.gitattributes", repo_directory))
+            .and_then(|mut f| f.write_all(GIT_ATTRIBUTES.as_bytes()))
+            .expect("Could not create or write to .gitattributes");
 
-        let mut git_ignore_file = File::create(format!("{}/.gitignore", repo_directory))
-            .expect("Could not create .gitignore");
-        git_ignore_file
-            .write_all(GIT_IGNORE.as_bytes())
-            .expect("Could not write to .gitignore");
+        File::create(format!("{}/.gitignore", repo_directory))
+            .and_then(|mut f| f.write_all(GIT_IGNORE.as_bytes()))
+            .expect("Could not create or write to .gitignore");
 
-        let mut git_readme_file = File::create(format!("{}/README.md", repo_directory))
-            .expect("Could not create README.md");
-        git_readme_file
-            .write_all(GIT_README.as_bytes())
-            .expect("Could not write to README.md");
+        File::create(format!("{}/README.md", repo_directory))
+            .and_then(|mut f| f.write_all(GIT_README.as_bytes()))
+            .expect("Could not create or write to README.md");
     }
 
-    let mut repository_config_file = OpenOptions::new()
+    // write to .gitconfig on both init and clone
+    OpenOptions::new()
         .append(true)
         .open(format!("{}/.git/config", repo_directory))
-        .expect("Could not open .git/config for appending");
-
-    repository_config_file
-        .write_all(GIT_CONFIG.as_bytes())
-        .expect("Could not write to .git/config");
+        .and_then(|mut f| f.write_all(GIT_CONFIG.as_bytes()))
+        .expect("Could not open or write to .git/config");
 }
 
 fn get_repo_directory_for_init(git_stdout: Vec<u8>) -> String {

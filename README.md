@@ -12,13 +12,13 @@ The motivation for this project is to leverage the power and reliability of `git
 You must have `git` and `git-lfs` installed.
 
 ### Binary
-Download from the [releases page](https://github.com/clintburgos/ableton-git/releases). Place it in your `bin` directory.
+Download the executable for your platform from the [releases page](https://github.com/clintburgos/ableton-git/releases). Place it in your `bin` directory.
 
 ### Source
 Clone this repo and run `cargo build --release`. The compiled binary will appear in `target/release`.
 
 ## Usage
-```
+``` sh
 # From the root of your Ableton Live project:
 $ ableton-git init
 
